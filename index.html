@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday - A Magical Journey</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Orbitron:wght@700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel Decorative', cursive;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Scene Management */
+        .scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .scene.active {
+            display: flex;
+            opacity: 1;
+            z-index: 10;
+        }
+
+        /* Scene 1: Envelope */
+        .envelope-scene {
+            background: radial-gradient(circle at center, #2d1b4e 0%, #1a1a2e 100%);
+        }
+
+        .envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .envelope-container:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+            clip-path: polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%);
+            z-index: 3;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #a83248;
+            z-index: 1;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(135deg, #ff6b6b 0%, #e94560 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.6s;
+            z-index: 4;
+        }
+
+        .envelope-seal {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: gold;
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .instruction {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: #ffd700;
+            animation: pulse 2s infinite;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Scene 2: Gift Box */
+        .gift-scene {
+            background: radial-gradient(circle at center, #0f3460 0%, #16213e 100%);
+        }
+
+        .gift-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .gift-box {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(233, 69, 96, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .gift-lid {
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            width: 170px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #e94560);
+            border-radius: 10px;
+            transition: transform 0.5s;
+        }
+
+        .gift-bow {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 30px;
+            border: 8px solid gold;
+            border-radius: 50% 50% 0 0;
+            border-bottom: none;
+        }
+
+        .gift-bow::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: -20px;
+            width: 40px;
+            height: 40px;
+            border: 8px solid gold;
+            border-radius: 50%;
+            border-right: none;
+            border-bottom: none;
+            transform: rotate(-45deg);
+        }
+
+        .gift-bow::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: -20px;
+            width: 40px;
+            height: 40px;
+            border: 8px solid gold;
+            border-radius: 50%;
+            border-left: none;
+            border-bottom: none;
+            transform: rotate(45deg);
+        }
+
+        .sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: gold;
+            border-radius: 50%;
+            animation: sparkle 1s ease-out forwards;
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(2) rotate(180deg); opacity: 0; }
+        }
+
+        /* Scene 3: Storybook */
+        .story-scene {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%);
+            perspective: 1500px;
+        }
+
+        .book-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            transform-style: preserve-3d;
+        }
+
+        .book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+
+        .book-cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8b4513, #654321);
+            border-radius: 0 15px 15px 0;
+            transform-origin: left;
+            transition: transform 1s;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border: 4px solid #d4af37;
+        }
+
+        .book-cover h2 {
+            color: #ffd700;
+            font-size: 2rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .book-spine {
+            position: absolute;
+            left: 0;
+            width: 40px;
+            height: 100%;
+            background: linear-gradient(to right, #5c3a1e, #8b4513);
+            transform: rotateY(-90deg);
+            transform-origin: left;
+        }
+
+        .page {
+            position: absolute;
+            width: 380px;
+            height: 480px;
+            background: #fffef0;
+            left: 10px;
+            top: 10px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+            padding: 40px;
+            color: #333;
+            font-family: 'Georgia', serif;
+            display: none;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .page-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #4a4a4a;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .book-nav {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Scene 4: Photo Gallery */
+        .gallery-scene {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f23 100%);
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cube-container {
+            width: 300px;
+            height: 300px;
+            perspective: 1000px;
+            margin-bottom: 50px;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
+            backface-visibility: hidden;
+        }
+
+        .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(150px); }
+        .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(150px); }
+        .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(150px); }
+        .cube-face:nth-child(4) { transform: rotateY(270deg) translateZ(150px); }
+
+        .gallery-controls {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #e94560;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: #e94560;
+            transform: scale(1.1);
+        }
+
+        .gallery-hint {
+            color: #ffd700;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* ============================================
+           SCENE 5: FINAL CELEBRATION - GAMBAR KUE
+           ============================================ */
+
+        .final-scene {
+            background: radial-gradient(circle at center, #2d1b4e 0%, #1a1a2e 50%, #0f0f23 100%);
+            overflow: hidden;
+        }
+
+        .final-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .greeting-title {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255,215,0,0.5)); }
+            to { filter: drop-shadow(0 0 40px rgba(233,69,96,0.8)); }
+        }
+
+        .recipient-name {
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 20px rgba(233,69,96,0.8);
+        }
+
+        .wish-text {
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            color: #e0e0e0;
+            padding: 0 20px;
+        }
+
+        /* ============================================
+           TEMPAT GAMBAR KUE KAMU - START
+           ============================================ */
+
+        .cake-image-wrapper {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            margin: 30px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Gambar kue utama */
+        .my-birthday-cake {
+            /* 
+               UKURAN GAMBAR - Bisa disesuaikan 
+               Ganti width/height sesuai kebutuhan
+            */
+            width: 800px;      /* ← GANTI INI untuk ukuran */
+            height: auto;      /* ← Biarkan auto atau ganti ke px */
+            max-width: 100%;
+            
+            /* 
+               EFEK VISUAL 
+               Hapus atau modifikasi sesuai selera
+            */
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+            
+            /* 
+               ANIMASI 
+               Hapus baris ini jika tidak mau animasi
+            */
+            animation: cakeFloat 3s ease-in-out infinite;
+            
+            /* 
+               POSISI 
+               Sesuaikan jika gambar tidak center
+            */
+            object-fit: contain;
+            object-position: center;
+        }
+
+        /* Animasi mengambang */
+        @keyframes cakeFloat {
+            0%, 100% { 
+                transform: translateY(0) scale(1); 
+            }
+            50% { 
+                transform: translateY(-20px) scale(1.02); 
+            }
+        }
+
+
+        .addon-flame {
+            width: 20px;        /* ← Sesuaikan ukuran api */
+            height: 30px;       /* ← Sesuaikan ukuran api */
+            background: radial-gradient(ellipse at center, #ffd700 0%, #ff6b00 60%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flameDance 0.5s ease-in-out infinite alternate;
+            box-shadow: 
+                0 0 20px #ff6b00, 
+                0 0 40px #ffd700,
+                0 0 60px rgba(255, 107, 0, 0.6);
+            margin-bottom: -5px;
+        }
+
+        .addon-stick {
+            width: 12px;        /* ← Sesuaikan ukuran lilin */
+            height: 40px;       /* ← Sesuaikan ukuran lilin */
+            background: linear-gradient(to right, #ff6b6b, #ee5a5a, #ff6b6b);
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        @keyframes flameDance {
+            0% { 
+                transform: scale(1) rotate(-5deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(1.2) rotate(5deg); 
+                opacity: 0.9; 
+            }
+        }
+
+        /* Responsive untuk mobile */
+        @media (max-width: 768px) {
+            .cake-image-wrapper {
+                width: 280px;
+                height: 280px;
+            }
+            .my-birthday-cake {
+                width: 220px;   /* ← Ukuran lebih kecil di mobile */
+            }
+        }
+
+        /* ============================================
+           TEMPAT GAMBAR KUE KAMU - END
+           ============================================ */
+
+        .typewriter-text {
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-top: 30px;
+            min-height: 40px;
+        }
+
+        .typed-cursor {
+            color: #e94560;
+        }
+
+        /* Canvas for effects */
+        #confetti-canvas, #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Audio control */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(233, 69, 96, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-control:hover {
+            transform: scale(1.1);
+            background: #e94560;
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loading-text {
+            font-size: 2rem;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ffd700);
+            transition: width 0.3s;
+        }
+
+        .start-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-family: inherit;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .start-btn.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.5);
+        }
+
+        /* Floating hearts */
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            animation: floatUp 10s linear forwards;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .greeting-title { font-size: 2.5rem; }
+            .recipient-name { font-size: 2rem; }
+            .book-container { width: 300px; height: 400px; }
+            .page { width: 280px; height: 380px; padding: 20px; }
+            .cube-container { width: 250px; height: 250px; }
+            .cube-face { width: 250px; height: 250px; }
+            .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(125px); }
+            .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(125px); }
+            .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(125px); }
+            .cube-face:nth-child(4) { transform: rotateY(270deg) translateZ(125px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">WOII HAHAHAH udah 20 TAHUN...</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        <button class="start-btn" id="startBtn" onclick="startExperience()">tekan ini tua</button>
+    </div>
+
+    <!-- Audio -->
+    <audio id="bgMusic" loop>
+        <source src="long life.mp3" type="audio/mpeg">
+    </audio>
+    <button class="audio-control" id="audioBtn" onclick="toggleAudio()">🎵</button>
+
+    <!-- Effects Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+    <canvas id="fireworks-canvas"></canvas>
+
+    <!-- Scene 1: Envelope -->
+    <div class="scene envelope-scene active" id="scene1">
+        <div class="envelope-container" onclick="openEnvelope()">
+            <div class="envelope">
+                <div class="envelope-back"></div>
+                <div class="envelope-front"></div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-seal">💌</div>
+            </div>
+        </div>
+        <p class="instruction">Click to open your special message</p>
+    </div>
+
+    <!-- Scene 2: Gift Box -->
+    <div class="scene gift-scene" id="scene2">
+        <div class="gift-container" onclick="openGift()">
+            <div class="gift-box">
+                <div class="gift-lid" id="giftLid"></div>
+                <div class="gift-bow"></div>
+            </div>
+            <div class="sparkles" id="sparkles"></div>
+        </div>
+        <p class="instruction">buka buat liat isi kadonya muhehehe...</p>
+    </div>
+
+    <!-- Scene 3: Storybook -->
+    <div class="scene story-scene" id="scene3">
+        <div class="book-container">
+            <div class="book" id="book">
+                <div class="book-cover" id="bookCover" onclick="openBook()">
+                    <h1>⸜(｡˃ ᵕ ˂ )⸝♡</h1>
+                    <h2>sedikit ucapan ala-ala dari kaka belbi seorang hengker sejati</h2>
+                    <h1 style="color: #d4af37; margin-top: 20px; font-size: 1rem;">⸜(｡˃ ᵕ ˂ )⸝♡</h1>
+                </div>
+                <div class="page active" id="page1">
+                    <p class="page-text">HI TIO YANG UDAH 20 TAHUN AWOAWKOKW<br><br>Semoga di usia TUA yang mungkin sudah menginjak kepala orang ini, bisa jadi usia yang penuh dengan keberuntungan, pencapaian, dan lain lain humm. </p>
+                    <span class="page-number">1</span>
+                </div>
+                <div class="page" id="page2">
+                    <p class="page-text">Di niw chapter ini...<br><br>Aku yakin.. setidaknya dapat PACARlah AWOAWAWOAWK kasian. oya judul backsoundnya Long Live-lagunya taylor(gw sejam cuma nyariin lagu yang cocok)</p>
+                    <span class="page-number">2</span>
+                </div>
+                <div class="page" id="page3">
+                    <p class="page-text">Tapi ya, aku beneran berharap...<br><br>semoga hidupmu tidak terlalu sulit, semoga nasimu selalu hangat, tidak telat kelas, atau terhindar dari terpentuk saat jalan, submit tugas tepat waktu, dan jangan anggurin chat guwehh.TUHAN YESUS MEMBERKATI AMENNN</p>
+                    <span class="page-number">3</span>
+                </div>
+                <div class="page" id="page4">
+                    <p class="page-text">AND LASTTT....SELAMAT ULANG TAHUN YAAA!<br><br>Jadi diri sendiri terus yaa, jangan banyak berubah plissss. aku masih berharap bisa rayain ulang tahunmu sampe 100 kali hikss</p>
+                    <span class="page-number">4</span>
+                </div>
+            </div>
+        </div>
+        <div class="book-nav" id="bookNav" style="display: none;">
+            <button class="nav-btn" onclick="prevPage()" id="prevBtn">←sblm</button>
+            <button class="nav-btn" onclick="nextPage()" id="nextBtn">lnjt →</button>
+        </div>
+    </div>
+
+<!-- Scene 4: Photo Gallery -->
+<div class="scene gallery-scene" id="scene4">
+    <div class="gallery-container">
+        <h2 style="margin-bottom: 30px; color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.5); font-size: 2.5rem;">HADIAH WAKWKAKW</h2>
+        
+        <div class="cube-container">
+            <div class="cube" id="photoCube">
+                <!-- Foto 1: hee.png -->
+                <div class="cube-face" style="background-image: url('hee.png'); background-size: cover; background-position: center;"></div>
+                
+                <!-- Foto 2: daur.png -->
+                <div class="cube-face" style="background-image: url('daur.png'); background-size: cover; background-position: center;"></div>
+                
+                <!-- Foto 3: 20.png -->
+                <div class="cube-face" style="background-image: url('20.png'); background-size: cover; background-position: center;"></div>
+                
+                <!-- Foto 4: tua.png -->
+                <div class="cube-face" style="background-image: url('tua.png'); background-size: cover; background-position: center;"></div>
+            </div>
+        </div>
+        
+        <div class="gallery-controls">
+            <button class="control-btn" onclick="rotateCube(-1)">◀</button>
+            <button class="control-btn" onclick="rotateCube(1)">▶</button>
+        </div>
+        
+        <p class="gallery-hint" style="font-size: 1.2rem; margin-top: 20px; letter-spacing: 2px;">
+            bosan pake foto daur ulang
+        </p>
+        
+        <button class="nav-btn" onclick="goToFinal()" style="margin-top: 30px; font-size: 1.2rem; padding: 15px 40px;">
+            HEREE, last scene hihihi
+        </button>
+    </div>
+</div>
+
+    <!-- ============================================
+         SCENE 5: FINAL CELEBRATION - TEMPAT GAMBAR KUE
+         ============================================ -->
+    <div class="scene final-scene" id="scene5">
+        <div class="final-content">
+            <h1 class="greeting-title">Happy Birthday</h1>
+            <h2 class="recipient-name" id="birthdayName">TIOOOOOOOO</h2>
+            <p class="wish-text">
+                SELAMAT ULANG TAHUN YAA!SELAMAT ULANG TAHUN YAA!SELAMAT ULANG TAHUN YAA!SELAMAT ULANG TAHUN YAA!SELAMAT ULANG TAHUN YAA!SELAMAT ULANG TAHUN YAA!SELAMAT ULANG TAHUN YAA!
+            </p>
+            
+            <!-- ============================================
+                 TEMPAT UPLOAD GAMBAR KUE KAMU - START
+                 
+                 INSTRUKSI:
+                 1. Upload gambar kue ke folder yang sama dengan file HTML
+                 2. Ganti "gambar-kue-anda.png" dengan nama file kamu
+                 3. Contoh: "cake.png", "my-cake.jpg", "birthday-cake.svg"
+                 
+                 ============================================ -->
+            <div class="cake-image-wrapper">
+                
+                <!-- 
+                    GANTI SRC DI BAWAH INI:
+                    - Jika file di folder yang sama: src="nama-file.png"
+                    - Jika file di subfolder: src="images/nama-file.png"
+                    - Jika pakai URL: src="https://website.com/gambar.png"
+                -->
+                <img src="cake.png" 
+                     alt="Birthday Cake" 
+                     class="my-birthday-cake"
+                     id="myCakeImage"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23f9e076\'/%3E%3Ccircle cx=\'50\' cy=\'40\' r=\'25\' fill=\'%23f5b7b1\'/%3E%3Cpath d=\'M30 60 L70 60 L65 90 L35 90 Z\' fill=\'%23d2b48c\'/%3E%3Ccircle cx=\'40\' cy=\'30\' r=\'4\' fill=\'%23ff69b4\'/%3E%3Ccircle cx=\'60\' cy=\'30\' r=\'4\' fill=\'%23ff69b4\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'12\' text-anchor=\'middle\' fill=\'%23fff\'%3E🎂%3C/text%3E%3C/svg%3E';">
+                
+
+            <div class="typewriter-text" id="typewriter"></div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentScene = 1;
+        let currentPage = 1;
+        let cubeRotation = 0;
+        let audioPlaying = false;
+        const totalPages = 4;
+        
+        // Initialize
+        window.onload = function() {
+            simulateLoading();
+            createFloatingHearts();
+        };
+
+        function simulateLoading() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    document.getElementById('startBtn').classList.add('show');
+                }
+                document.getElementById('loadingProgress').style.width = progress + '%';
+            }, 200);
+        }
+
+        function startExperience() {
+        document.getElementById('loadingScreen').style.opacity = '0';
+        setTimeout(() => {
+        document.getElementById('loadingScreen').style.display = 'none';
+        playAudio();
+        
+        // Langsung ke Scene 2 (skip amplop)
+        document.getElementById('scene1').classList.remove('active');
+        document.getElementById('scene2').classList.add('active');
+        currentScene = 2;  // Set current scene ke 2
+        
+    }, 500);
+}
+
+        function playAudio() {
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Audio autoplay blocked'));
+        }
+
+        function toggleAudio() {
+            const audio = document.getElementById('bgMusic');
+            const btn = document.getElementById('audioBtn');
+            if (audioPlaying) {
+                audio.pause();
+                btn.textContent = '🔇';
+            } else {
+                audio.play();
+                btn.textContent = '🎵';
+            }
+            audioPlaying = !audioPlaying;
+        }
+
+        // Scene transitions
+        function nextScene() {
+            document.getElementById(`scene${currentScene}`).classList.remove('active');
+            currentScene++;
+            setTimeout(() => {
+                document.getElementById(`scene${currentScene}`).classList.add('active');
+                triggerSceneEffects();
+            }, 500);
+        }
+
+        function triggerSceneEffects() {
+            if (currentScene === 2) {
+                // Gift scene effects
+            } else if (currentScene === 5) {
+                startFinalCelebration();
+            }
+        }
+
+        // Scene 1: Envelope
+        function openEnvelope() {
+            document.querySelector('.envelope-container').classList.add('open');
+            fireConfetti();
+            setTimeout(nextScene, 1500);
+        }
+
+        // Scene 2: Gift
+        function openGift() {
+            const lid = document.getElementById('giftLid');
+            lid.style.transform = 'translateY(-100px) rotate(-10deg)';
+            
+            // Create sparkles
+            const sparklesContainer = document.getElementById('sparkles');
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * 100 + '%';
+                    sparkle.style.top = Math.random() * 100 + '%';
+                    sparklesContainer.appendChild(sparkle);
+                    setTimeout(() => sparkle.remove(), 1000);
+                }, i * 100);
+            }
+            
+            fireConfetti();
+            setTimeout(nextScene, 2000);
+        }
+
+        // Scene 3: Book
+        function openBook() {
+            document.getElementById('bookCover').style.transform = 'rotateY(-180deg)';
+            document.getElementById('bookNav').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('page1').style.display = 'flex';
+            }, 500);
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                document.getElementById(`page${currentPage}`).classList.remove('active');
+                document.getElementById(`page${currentPage}`).style.display = 'none';
+                currentPage++;
+                document.getElementById(`page${currentPage}`).style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById(`page${currentPage}`).classList.add('active');
+                }, 50);
+                
+                if (currentPage === totalPages) {
+                    setTimeout(() => {
+                        document.getElementById('nextBtn').textContent = 'lnjut →';
+                        document.getElementById('nextBtn').onclick = nextScene;
+                    }, 500);
+                }
+            }
+            updateNavButtons();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                document.getElementById(`page${currentPage}`).classList.remove('active');
+                document.getElementById(`page${currentPage}`).style.display = 'none';
+                currentPage--;
+                document.getElementById(`page${currentPage}`).style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById(`page${currentPage}`).classList.add('active');
+                }, 50);
+                
+                // Reset next button if needed
+                if (currentPage < totalPages) {
+                    document.getElementById('nextBtn').textContent = 'Next →';
+                    document.getElementById('nextBtn').onclick = nextPage;
+                }
+            }
+            updateNavButtons();
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+        }
+
+        // Scene 4: Gallery
+        function rotateCube(direction) {
+            cubeRotation += direction * 90;
+            document.getElementById('photoCube').style.transform = `rotateY(${cubeRotation}deg)`;
+        }
+
+        function goToFinal() {
+            nextScene();
+        }
+
+        // Scene 5: Final
+        function startFinalCelebration() {
+            // Start fireworks
+            const container = document.getElementById('fireworks-canvas');
+            const fireworks = new Fireworks.default(container, {
+                autoresize: true,
+                opacity: 0.5,
+                acceleration: 1.05,
+                friction: 0.97,
+                gravity: 1.5,
+                particles: 80,
+                trace: 3,
+                explosion: 6,
+                intensity: 40,
+                flickering: 50,
+                hue: { min: 0, max: 360 },
+                delay: { min: 30, max: 100 },
+                rocketsPoint: { min: 50, max: 50 },
+                brightness: { min: 50, max: 80 },
+                decay: { min: 0.015, max: 0.03 }
+            });
+            fireworks.start();
+
+            // Typewriter effect
+            new Typed('#typewriter', {
+                strings: [
+                    'Wishing You A Day Filled With Joy...',
+                    'Love & Endless Smiles...',
+                    'May Your Heart Shine Brighter...',
+                    'Than The Candles On Your Cake...',
+                    'Happy Birthday! 🎉🎂🎈'
+                ],
+                typeSpeed: 50,
+                backSpeed: 30,
+                backDelay: 2000,
+                loop: true,
+                cursorChar: '|'
+            });
+
+            // Continuous confetti
+            setInterval(() => {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ffd700', '#ff6b6b', '#e94560', '#ffffff']
+                });
+            }, 3000);
+        }
+
+        // Effects
+        function fireConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.8 },
+                colors: ['#ffd700', '#ff6b6b', '#e94560', '#ffffff', '#00d2ff']
+            });
+        }
+
+        function createFloatingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '💖';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                heart.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 13000);
+            }, 2000);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (currentScene === 3) {
+                if (e.key === 'ArrowRight') nextPage();
+                if (e.key === 'ArrowLeft') prevPage();
+            } else if (currentScene === 4) {
+                if (e.key === 'ArrowRight') rotateCube(1);
+                if (e.key === 'ArrowLeft') rotateCube(-1);
+            }
+        });
+
+        // Touch support for gallery
+        let touchStartX = 0;
+        const cubeElement = document.getElementById('photoCube');
+        if (cubeElement) {
+            cubeElement.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            });
+            cubeElement.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    rotateCube(diff > 0 ? 1 : -1);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
